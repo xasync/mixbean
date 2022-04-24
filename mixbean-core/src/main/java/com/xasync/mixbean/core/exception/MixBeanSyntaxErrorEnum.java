@@ -15,26 +15,25 @@ limitations under the License.
 */
 package com.xasync.mixbean.core.exception;
 
-import com.xasync.mixbean.core.MixBeanTrack;
-import lombok.Getter;
-
 /**
- * MixBeanSyntaxException
+ * MixBeanSyntaxErrorEnum
  *
  * @author xasync.com
  */
-public class MixBeanSyntaxException extends MixBeanException {
+public enum MixBeanSyntaxErrorEnum {
+    //
+    BIZ_FUNC_BEAN_UNEXPECTED_BLANK,
+    BIZ_FUNC_BEAN_ALIAS_MISS_SYMBOL,
+    BIZ_FUNC_BEAN_MISS_ABILITY,
+    BIZ_FUNC_BEAN_MISS_PROVIDER,
+    BIZ_FUNC_BEAN_TIMEOUT_PARSE_FAIL,
 
-    @Getter
-    private final MixBeanSyntaxErrorEnum errorEnum;
+    PARAM_LIST_SYNTAX_ERROR,
 
-    public MixBeanSyntaxException(MixBeanTrack trace, MixBeanSyntaxErrorEnum errorEnum, String message) {
-        super(trace, "[" + errorEnum.name() + "] " + message);
-        this.errorEnum = errorEnum;
-    }
+    UNEXPECTED_BLANK_PARALLEL_DSL,
 
-    public MixBeanSyntaxException(MixBeanTrack trace, MixBeanSyntaxErrorEnum errorEnum, String message, Throwable cause) {
-        super(trace, "[" + errorEnum.name() + "] " + message, cause);
-        this.errorEnum = errorEnum;
-    }
+    PARALLEL_NESTING_NOT_SUPPORT,
+
+    PARALLEL_MISS_END_SYMBOL,
+    ;
 }

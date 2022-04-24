@@ -15,8 +15,13 @@ limitations under the License.
 */
 package com.xasync.mixbean.core;
 
+import com.xasync.mixbean.core.exception.MixBeanRuntimeException;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.xasync.mixbean.core.MixBeanDslSymbols.*;
 import static com.xasync.mixbean.core.MixBeanDslSymbols.BEAN_PARAM_LIST_END;
@@ -61,7 +66,13 @@ public class BizFuncBeanDslSpec {
      * @return name
      */
     private static String genBizFuncBeanName(String ability, String provider) {
-        return ability + ABILITY_PROVIDER_DELIMITER + provider;
+        String newAbility = StringUtils.trimToEmpty(ability);
+        if (newAbility.isEmpty()) {
+            throw new MixBeanRuntimeException(MixBeanTrack.current(),
+                    String.format("Abort to generate the name of BizFuncBean because the ability is empty '%s'", ability));
+        }
+        provider = StringUtils.trimToEmpty(provider);
+        return provider.isEmpty() ? newAbility : newAbility + ABILITY_PROVIDER_DELIMITER + provider;
     }
 
     /**

@@ -1,15 +1,19 @@
 package com.xasync.mixbean.core;
 
 import com.alibaba.fastjson.JSON;
+import com.xasync.mixbean.core.support.BaseSpringTest;
 import lombok.Data;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
-public class MixBeansTest {
+public class MixBeansTest extends BaseSpringTest {
+
 
     @Test
     public void testCookEggAndTomato() {
@@ -37,7 +41,7 @@ public class MixBeansTest {
         //obtain the result of last BizFuncBean
         ChineseDishes dishes = cxt.extractLastBeanReturn(ChineseDishes.class);
         System.out.println(JSON.toJSONString(dishes));
-        //Assert.assertNotNull(dishes);
+        //AssertExt.assertNotNull(dishes);
 
         //MixBeanRunner runner = new MixBeanRunner();
         //runner.interpret(dsl);

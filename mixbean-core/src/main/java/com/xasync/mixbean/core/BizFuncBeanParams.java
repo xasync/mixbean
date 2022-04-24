@@ -19,6 +19,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.xasync.mixbean.core.enhance.BizFuncBeanMeta;
 import com.xasync.mixbean.core.exception.MixBeanParamException;
+import com.xasync.mixbean.core.exception.MixBeanRuntimeException;
 import com.xasync.mixbean.core.exception.MixBeanSyntaxException;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
@@ -47,7 +48,7 @@ public class BizFuncBeanParams {
         int len = Objects.nonNull(paramValueList) ? paramValueList.size() : 0;
         int pLen = Objects.nonNull(bizFuncBeanMeta.getParamList()) ? bizFuncBeanMeta.getParamList().size() : 0;
         if (len > 0 && pLen < len) {
-            throw new MixBeanSyntaxException(trace, "");
+            throw new MixBeanRuntimeException(trace, "");
         }
         return params;
     }
@@ -61,7 +62,7 @@ public class BizFuncBeanParams {
         int index = pair.getLeft();
         //don't define the parameter
         if (index < 0) {
-            throw new MixBeanSyntaxException(trace, String.format("miss the parameter definition about '%s'", name));
+            throw new MixBeanRuntimeException(trace, String.format("miss the parameter definition about '%s'", name));
         }
         BizFuncBeanMeta.ParameterMeta param = pair.getRight();
         Object obj = index < paramValueList.size() ? paramValueList.get(index) : null;

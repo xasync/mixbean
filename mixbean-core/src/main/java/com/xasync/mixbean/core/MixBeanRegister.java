@@ -17,12 +17,15 @@ limitations under the License.
 package com.xasync.mixbean.core;
 
 import com.xasync.mixbean.core.enhance.BizFuncBeanMeta;
+import com.xasync.mixbean.core.util.LogUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * MixBeanRegister
@@ -30,37 +33,40 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author xasync.com
  */
 class MixBeanRegister {
-    private final Map<String, BizFuncBeanMeta> META_REG_POOL = new ConcurrentHashMap<>();
-    private final Map<String, BizFuncBeanDefinition> BEAN_REG_POOL = new ConcurrentHashMap<>();
+    private final Map<String, Pair<BizFuncBeanDefinition, BizFuncBeanMeta>> BEAN_REG_POOL = new ConcurrentHashMap<>();
 
 
     public void register(BizFuncBeanDefinition bizFuncBean) {
+        String clazzName = null;
         try {
-            String bizFuncName = BizFuncBeanDslSpec.genBizFuncBeanName(bizFuncBean);
-            BEAN_REG_POOL.putIfAbsent(bizFuncName, bizFuncBean);
-            META_REG_POOL.putIfAbsent(bizFuncName, BizFuncBeanMeta.from(bizFuncBean));
-            System.out.println("[MixBean] success to register '" + bizFuncName + "'");
+            if (Objects.isNull(bizFuncBean)) {
+                LogUtils.warn("Abort to register 'null'");
+                return;
+            }
+            clazzName = bizFuncBean.getClass().getCanonicalName();
+            BizFuncBeanMeta meta = BizFuncBeanMeta.from(bizFuncBean);
+            String bizFuncName = meta.getName();
+            //BizFuncBean's instance
+            if (BEAN_REG_POOL.containsKey(bizFuncName)) {
+                LogUtils.warn("Duplicate to register '{}' as '{}'", clazzName, bizFuncName);
+                return;
+            }
+            BEAN_REG_POOL.put(bizFuncName, Pair.of(bizFuncBean, meta));
+            LogUtils.info("success to register '{}' as '{}'", clazzName, bizFuncName);
         } catch (Throwable ex) {
-            System.out.println("[MixBean] fail to register '" +
-                    (bizFuncBean != null ? bizFuncBean.getClass().getCanonicalName() : null) + "', cause:" +
-                    ExceptionUtils.getMessage(ex));
+            LogUtils.error("fail to register '{}'", ex, clazzName);
         }
     }
 
     public Pair<BizFuncBeanDefinition, BizFuncBeanMeta> findBizFuncBean(String bizFuncName) {
-        BizFuncBeanDefinition bizFuncBean = BEAN_REG_POOL.get(bizFuncName);
-        if (Objects.isNull(bizFuncBean)) {
-            throw new RuntimeException();
-        }
-        BizFuncBeanMeta meta = META_REG_POOL.get(bizFuncName);
-        if (Objects.isNull(meta)) {
-            throw new RuntimeException();
-        }
-        return Pair.of(bizFuncBean, meta);
+        return BEAN_REG_POOL.get(bizFuncName);
     }
 
 
-    public Map<String, BizFuncBeanMeta> getRegBizFuncBeanMetaMap() {
-        return META_REG_POOL;
+    public List<BizFuncBeanMeta> getBizFuncBeanMetaList() {
+        return BEAN_REG_POOL.values()
+                .stream()
+                .map(Pair::getValue)
+                .collect(Collectors.toList());
     }
 }

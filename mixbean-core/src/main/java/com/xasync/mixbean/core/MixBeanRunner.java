@@ -51,7 +51,7 @@ class MixBeanRunner {
 
     public void execute(final MixBeanContext cxt, final String dsl) {
         if (StringUtils.isBlank(dsl)) {
-            log.debug("[MixBean] {} Your DSL '{}' is blank and nothing to do", MixBeanTrack.current(), dsl);
+            log.debug("{} Your DSL '{}' is blank and nothing to do", MixBeanTrack.current(), dsl);
             return;
         }
         //compile dsl before execution, but it will use the cache if exists.

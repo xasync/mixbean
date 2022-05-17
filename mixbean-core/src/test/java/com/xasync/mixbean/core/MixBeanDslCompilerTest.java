@@ -171,5 +171,9 @@ public class MixBeanDslCompilerTest {
         AssertExt.assertEquals("{'hi',{1,2,3}}", spec.getParamLineAsSpEl());
     }
 
+    public static void main(String[] args) {
+        System.out.println();
+    }
+
 
 }

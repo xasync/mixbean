@@ -1,6 +1,7 @@
 package com.xasync.mixbean.core;
 
 import com.alibaba.fastjson.JSON;
+import com.xasync.island.spring.SpringContexts;
 import com.xasync.mixbean.core.support.BaseSpringTest;
 import lombok.Data;
 import org.junit.Assert;
@@ -14,9 +15,10 @@ import java.util.*;
 
 public class MixBeansTest extends BaseSpringTest {
 
-
     @Test
     public void testCookEggAndTomato() {
+        String projectName = SpringContexts.value("${project.name}");
+        System.out.println("=== " + projectName + " ===");
         //design a workflow in MixBean's DSL
         String dsl = "{ " + /* the start of parallel block */
                 "boil#cook(#input.container,#input.liquid)=>blanch#cook(#boil)=>cut#cook(#blanch)" +

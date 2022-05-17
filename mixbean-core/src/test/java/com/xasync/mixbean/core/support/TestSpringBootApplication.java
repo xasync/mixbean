@@ -13,28 +13,15 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package com.xasync.mixbean.core;
+package com.xasync.mixbean.core.support;
 
-import com.xasync.mixbean.core.bizfunc.case_reg.EmptyBizFuncBean;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * MixBeansQuickTest
+ * TestSpringBootApplication
  *
  * @author xasync.com
  */
-@Slf4j
-public class MixBeansQuickTest {
-
-    @Test
-    public void testRegister() {
-        MixBeans.register(null);
-        MixBeans.register(new EmptyBizFuncBean());
-    }
-
-    @Test
-    public void testLogger() {
-        log.info("test");
-    }
+@SpringBootApplication(scanBasePackages = "com.xasync.mixbean")
+public class TestSpringBootApplication {
 }

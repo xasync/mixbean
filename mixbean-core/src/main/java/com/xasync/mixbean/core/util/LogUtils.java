@@ -19,23 +19,19 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.CoreConstants;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy;
 import ch.qos.logback.core.util.FileSize;
-import com.xasync.mixbean.core.util.logback.MixBeanClassOfCallerConverter;
+import com.xasync.island.log.logback.FocusClassOfCallerConverter;
+import com.xasync.island.log.logback.LogbackConverters;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.impl.StaticLoggerBinder;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 
 /**
  * LogUtils
@@ -111,11 +107,10 @@ public class LogUtils {
         try {
             ROOT_LOGGER = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
             //MixBean Private Logger
-            ILoggerFactory loggerFactory = StaticLoggerBinder.getSingleton().getLoggerFactory();
+            ILoggerFactory loggerFactory = LoggerFactory.getILoggerFactory();
             boolean provideByLogback = (loggerFactory instanceof LoggerContext);
             if (provideByLogback) {
                 LoggerContext loggerContext = (LoggerContext) loggerFactory;
-                addConverterForLogback(loggerContext, MixBeanClassOfCallerConverter.class, MixBeanClassOfCallerConverter.NAME);
                 //appender
                 RollingFileAppender<ILoggingEvent> appender = newRollingFileAppender(loggerContext);
                 //create a custom logger if not exists
@@ -140,17 +135,6 @@ public class LogUtils {
         return Paths.get(userHome, LOG_FILE_NAME);
     }
 
-    private static void addConverterForLogback(LoggerContext loggerContext, Class<?> clazz, String name) {
-        Map<String, String> ruleRegistry = (Map<String, String>) loggerContext.getObject(
-                CoreConstants.PATTERN_RULE_REGISTRY);
-        Map<String, String> newRuleRegistry = new HashMap<>();
-        if (Objects.nonNull(ruleRegistry)) {
-            newRuleRegistry.putAll(ruleRegistry);
-        }
-        newRuleRegistry.put(name, clazz.getCanonicalName());
-        loggerContext.putObject(CoreConstants.PATTERN_RULE_REGISTRY, newRuleRegistry);
-    }
-
     private static RollingFileAppender<ILoggingEvent> newRollingFileAppender(LoggerContext loggerContext) {
         RollingFileAppender<ILoggingEvent> appender = new RollingFileAppender<>();
         appender.setContext(loggerContext);
@@ -169,16 +153,12 @@ public class LogUtils {
         policy.start();
         appender.setRollingPolicy(policy);
         //encoder
+        LogbackConverters.register(FocusClassOfCallerConverter.class, FocusClassOfCallerConverter.SHORT_NAME);
         PatternLayoutEncoder encoder = new PatternLayoutEncoder();
         encoder.setContext(loggerContext);
         encoder.setCharset(StandardCharsets.UTF_8);
         //define the data format in log
-        encoder.setPattern(String.join(COL_SP,
-                "%date{yyyy-MM-dd'T'HH:mm:ss.SSS}",
-                "%level",
-                "%thread",
-                "%mbCaller{15}",
-                "%message%n"));
+        encoder.setPattern(String.join(COL_SP, "%date{yyyy-MM-dd'T'HH:mm:ss.SSS}", "%level", "%thread", "%fc{15,1}", "%message%n"));
         encoder.start();
         appender.setEncoder(encoder);
         //start

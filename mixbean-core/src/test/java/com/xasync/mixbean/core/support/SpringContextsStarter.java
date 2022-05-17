@@ -13,28 +13,23 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package com.xasync.mixbean.core;
+package com.xasync.mixbean.core.support;
 
-import com.xasync.mixbean.core.bizfunc.case_reg.EmptyBizFuncBean;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
+import com.xasync.island.spring.SpringContexts;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Component;
 
 /**
- * MixBeansQuickTest
+ * SpringContextsStarter
  *
  * @author xasync.com
  */
-@Slf4j
-public class MixBeansQuickTest {
-
-    @Test
-    public void testRegister() {
-        MixBeans.register(null);
-        MixBeans.register(new EmptyBizFuncBean());
-    }
-
-    @Test
-    public void testLogger() {
-        log.info("test");
+@Component()
+public class SpringContextsStarter implements ApplicationContextAware {
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        SpringContexts.init(applicationContext);
     }
 }
